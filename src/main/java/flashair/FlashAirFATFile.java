@@ -4,7 +4,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FlashAirFATFile extends FATFile {
+	private static final Logger LOGGER = LoggerFactory.getLogger(FlashAirFATFile.class);
 
 	private static final String FILE_LIST_HEADER = "WLANSD_FILELIST";
 	private static final Byte ARGUMENTS_PER_FILE_ENTRY = 6;
@@ -31,6 +35,7 @@ public class FlashAirFATFile extends FATFile {
 		String[] parts = fileEntry.split(",");
 
 		if (parts.length != ARGUMENTS_PER_FILE_ENTRY) {
+			LOGGER.error("File entry was split in {} parts, but {} were expected.", parts.length, ARGUMENTS_PER_FILE_ENTRY);
 			throw new IllegalArgumentException("File entry was split in " + parts.length + "parts, but "
 					+ ARGUMENTS_PER_FILE_ENTRY + " were expected.");
 		}
@@ -95,10 +100,12 @@ public class FlashAirFATFile extends FATFile {
 	 */
 	private static LocalDateTime extractCreationTimestamp(Integer date, Integer time) {
 		if (date > UNSIGNED_SHORT_MAX_VALUE) {
+			LOGGER.error("Date is greater than {}", UNSIGNED_SHORT_MAX_VALUE);
 			throw new NumberFormatException("Date is greater than " + UNSIGNED_SHORT_MAX_VALUE);
 		}
 
 		if (time > UNSIGNED_SHORT_MAX_VALUE) {
+			LOGGER.error("Time is greater than {}", UNSIGNED_SHORT_MAX_VALUE);
 			throw new NumberFormatException("Time is greater than " + UNSIGNED_SHORT_MAX_VALUE);
 		}
 

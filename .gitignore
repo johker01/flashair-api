@@ -1,5 +1,13 @@
 build/
 bin/
+
+# Java
 *.class
 *.jar
 hs_err_pid*
+
+# Gradle
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache

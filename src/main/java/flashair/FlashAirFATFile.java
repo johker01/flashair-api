@@ -1,6 +1,8 @@
 package flashair;
 
-import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,19 +17,19 @@ public class FlashAirFATFile extends FATFile {
 	private static final Integer UNSIGNED_SHORT_MAX_VALUE = 65535;
 
 	public FlashAirFATFile(String parentFolder, String fileName, Integer size, Boolean archive, Boolean directory,
-			Boolean volume, Boolean system, Boolean hidden, Boolean readOnly, LocalDateTime creationTimeStamp) {
+			Boolean volume, Boolean system, Boolean hidden, Boolean readOnly, Date creationTimeStamp) {
 		super(parentFolder, fileName, size, archive, directory, volume, system, hidden, readOnly, creationTimeStamp);
 	}
-	
+
 	public static List<FATFile> parseFATFiles(List<String> fileList) {
 		List<FATFile> result = new ArrayList<>();
-		
+
 		for (String line : fileList) {
 			if (!line.isEmpty() && !line.contains(FILE_LIST_HEADER)) {
 				result.add(FlashAirFATFile.parseFATFile(line));
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -54,7 +56,7 @@ public class FlashAirFATFile extends FATFile {
 		Boolean system = FlashAirFATFile.extractIsSystem(attributes);
 		Boolean hidden = FlashAirFATFile.extractIsHidden(attributes);
 		Boolean readOnly = FlashAirFATFile.extractIsReadOnly(attributes);
-		LocalDateTime creationTimeStamp = FlashAirFATFile.extractCreationTimestamp(date, time);
+		Date creationTimeStamp = FlashAirFATFile.extractCreationTimestamp(date, time);
 
 		return new FATFile(parentDirectory, fileName, size, archive, directory, volume, system, hidden, readOnly,
 				creationTimeStamp);
@@ -96,9 +98,9 @@ public class FlashAirFATFile extends FATFile {
 	 *            packed integer representation where bits 15-11 rerepsent the
 	 *            hour, bits 10-5 represent the minute, and bits 4-0 represent
 	 *            the second/2.
-	 * @return {@link LocalDateTime} representing the file creation timestamp
+	 * @return {@link Date} representing the file creation timestamp
 	 */
-	private static LocalDateTime extractCreationTimestamp(Integer date, Integer time) {
+	private static Date extractCreationTimestamp(Integer date, Integer time) {
 		if (date > UNSIGNED_SHORT_MAX_VALUE) {
 			LOGGER.error("Date is greater than {}", UNSIGNED_SHORT_MAX_VALUE);
 			throw new NumberFormatException("Date is greater than " + UNSIGNED_SHORT_MAX_VALUE);
@@ -116,7 +118,9 @@ public class FlashAirFATFile extends FATFile {
 		int minute = (time >> 5) & 63;
 		int second = (time & 31) * 2;
 
-		return LocalDateTime.of(year, month, day, hour, minute, second);
+		Calendar calendar = GregorianCalendar.getInstance();
+		calendar.set(year, month - 1, day, hour, minute, second);
+		return calendar.getTime();
 	}
 
 	/**

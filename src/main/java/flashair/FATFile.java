@@ -1,6 +1,6 @@
 package flashair;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,10 +17,10 @@ public class FATFile {
 	private Boolean system;
 	private Boolean hidden;
 	private Boolean readOnly;
-	private LocalDateTime creationTimeStamp;
+	private Date creationTimeStamp;
 
 	public FATFile(String parentFolder, String fileName, Integer size, Boolean archive, Boolean directory,
-			Boolean volume, Boolean system, Boolean hidden, Boolean readOnly, LocalDateTime creationTimeStamp) {
+			Boolean volume, Boolean system, Boolean hidden, Boolean readOnly, Date creationTimeStamp) {
 
 		this.parentFolder = parentFolder;
 		this.fileName = fileName;
@@ -70,7 +70,7 @@ public class FATFile {
 		return this.readOnly;
 	}
 
-	public LocalDateTime getCreationTimestamp() {
+	public Date getCreationTimestamp() {
 		return creationTimeStamp;
 	}
 
